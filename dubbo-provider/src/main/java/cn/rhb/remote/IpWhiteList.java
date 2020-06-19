@@ -1,8 +1,10 @@
 package cn.rhb.remote;
 
 import lombok.Data;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,9 +15,10 @@ import java.util.List;
  * @Version 1.0
  */
 @Data
+@Component
 public class IpWhiteList {
 
-    private List<String> ips;
+    private List<String> ips = new ArrayList<>();
 
     private Boolean enable;
 

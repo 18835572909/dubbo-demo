@@ -2,8 +2,10 @@ package cn.rhb.remote;
 
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.extension.Activate;
+import com.alibaba.dubbo.config.spring.ServiceBean;
 import com.alibaba.dubbo.rpc.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationContext;
 
 import java.util.List;
 
@@ -19,7 +21,7 @@ import java.util.List;
 public class RemoteTrackIdFilter implements Filter {
 
     /*
-        没有显式的注入，是因为Dubbo的设计原理之一的扩展extension load
+        1. Bean没有显式的注入，是因为Dubbo的设计原理之一的扩展extension load
      */
     private IpWhiteList ipWhiteList;
 
@@ -34,7 +36,13 @@ public class RemoteTrackIdFilter implements Filter {
     */
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
-        log.info("RPC拦截器："+invoker+","+invocation);
+
+        //2. Bean注入的第二种方式
+        if(ipWhiteList==null){
+            ApplicationContext context = ServiceBean.getSpringContext();
+            ipWhiteList = (IpWhiteList) context.getBean(IpWhiteList.class);
+            log.info("RPC拦截器Bean注入："+ipWhiteList);
+        }
 
         if(!ipWhiteList.getEnable()){
             return invoker.invoke(invocation);
